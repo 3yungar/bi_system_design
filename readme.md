@@ -26,7 +26,7 @@
 2. **Запусти всю систему**
 
     ```bash
-    docker compose up -d
+    docker-compose up -d
     ```
 
 3. **Открой Metabase**
@@ -69,8 +69,8 @@ bi-system-design/
 - Пересоздай volume базы, чтобы скрипты отработали заново:
 
     ```bash
-    docker compose down -v
-    docker compose up -d
+    docker-compose down -v
+    docker-compose up -d
     ```
 
 ---
@@ -129,7 +129,7 @@ ssh akarmanov@<Внешний_IP_ВМ>
 ```bash
 git clone https://github.com/3yungar/bi_system_design.git
 cd bi_system_design
-docker compose up -d
+docker-compose up -d
 ```
 
 ### 5. Открой порт 3000 для доступа к Metabase
@@ -165,4 +165,4 @@ docker compose up -d
 
 ## 🏷️ License
 
-MIT License (или выбери свою)
+MIT License
