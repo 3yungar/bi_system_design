@@ -1,27 +1,18 @@
 services:
-  initdb-chmod:
-    image: busybox
-    volumes:
-      - ./initdb:/initdb
-    command: sh -c "chmod -R a+r /initdb"
-    entrypoint: ""
-    restart: "no"
-
   postgres:
     image: postgres:16
     container_name: bi_postgres
     restart: always
-    depends_on:
-      - initdb-chmod
     environment:
       POSTGRES_USER: metabase_user
       POSTGRES_PASSWORD: metabase_pass
       POSTGRES_DB: metabase_db
     ports:
-      - "5433:5432"
+      - "127.0.0.1:5433:5432"
     volumes:
-      - ./pgdata:/var/lib/postgresql/data
-      - ./initdb:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d:ro
+      - ./data/olist:/data/olist:ro
 
   metabase:
     image: metabase/metabase:v0.49.13
@@ -39,3 +30,5 @@ services:
     depends_on:
       - postgres
 
+volumes:
+  postgres_data:
