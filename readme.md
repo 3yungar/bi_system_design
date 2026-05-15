@@ -126,12 +126,12 @@ echo \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt update
 sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-sudo usermod -aG docker $USER
 ```
 
-Выйдите с сервера и подключитесь заново, чтобы применились права Docker:
+На сервере команды Docker можно выполнять через `sudo`. Если хотите запускать Docker без `sudo`, добавьте пользователя в группу `docker`, выйдите с сервера и подключитесь заново:
 
 ```bash
+sudo usermod -aG docker $USER
 exit
 ssh yc-user@<PUBLIC_IP>
 ```
@@ -139,8 +139,8 @@ ssh yc-user@<PUBLIC_IP>
 Проверьте установку:
 
 ```bash
-docker version
-docker compose version
+sudo docker version
+sudo docker compose version
 ```
 
 ### 5. Скачайте проект и данные
@@ -158,8 +158,8 @@ CSV-файлы скачиваются в `data/olist/` и не коммитят�
 ### 6. Запустите BI-систему
 
 ```bash
-docker compose up -d
-docker compose ps
+sudo docker compose up -d
+sudo docker compose ps
 ```
 
 Откройте Metabase:
@@ -198,15 +198,15 @@ psql -h localhost -p 5433 -U metabase_user -d olist_db
 ```bash
 cd bi_system_design
 git pull
-docker compose pull
-docker compose up -d
+sudo docker compose pull
+sudo docker compose up -d
 ```
 
 Если изменились SQL-скрипты или CSV и нужно пересоздать базу:
 
 ```bash
-docker compose down -v
-docker compose up -d
+sudo docker compose down -v
+sudo docker compose up -d
 ```
 
 ## Структура проекта
