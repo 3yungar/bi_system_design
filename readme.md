@@ -95,8 +95,9 @@ cat ~/.ssh/id_ed25519.pub
 
 - TCP `22` только с вашего IP-адреса для SSH.
 - TCP `3000` с вашего IP-адреса или `0.0.0.0/0`, если Metabase должен быть публично доступен.
+- TCP `5433` только для нужного IP-адреса, если нужно прямое подключение к PostgreSQL из Colab, DBeaver или Python.
 
-Порт PostgreSQL `5433` публично открывать не нужно. Для подключения к базе с компьютера используйте SSH-туннель.
+Для учебного стенда можно временно открыть `5433`, но после занятия лучше закрыть это правило или ограничить его конкретным IP.
 
 ### 3. Подключитесь к серверу
 
@@ -120,10 +121,10 @@ sudo apt install -y ca-certificates curl git
 sudo install -m 0755 -d /etc/apt/keyrings
 sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 sudo chmod a+r /etc/apt/keyrings/docker.asc
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+. /etc/os-release
+DOCKER_ARCH=$(dpkg --print-architecture)
+sudo rm -f /etc/apt/sources.list.d/docker.list
+printf 'deb [arch=%s signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu %s stable\n' "$DOCKER_ARCH" "$VERSION_CODENAME" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt update
 sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
@@ -177,18 +178,24 @@ http://<PUBLIC_IP>:3000
 - Username: `metabase_user`
 - Password: `metabase_pass`
 
-### 7. Подключитесь к PostgreSQL через SSH-туннель
+### 7. Подключитесь к PostgreSQL извне
 
-Если нужно работать с базой с локального компьютера, откройте отдельный PowerShell или Terminal:
+Если порт `5433` открыт в security group, можно подключиться напрямую:
 
 ```bash
-ssh -L 5433:localhost:5433 yc-user@<PUBLIC_IP>
+psql -h <PUBLIC_IP> -p 5433 -U metabase_user -d olist_db
+```
+
+Для более безопасного доступа используйте SSH-туннель. Откройте отдельный PowerShell или Terminal:
+
+```bash
+ssh -L 5435:127.0.0.1:5433 yc-user@<PUBLIC_IP>
 ```
 
 Пока это окно открыто, подключайтесь к PostgreSQL локально:
 
 ```bash
-psql -h localhost -p 5433 -U metabase_user -d olist_db
+psql -h 127.0.0.1 -p 5435 -U metabase_user -d olist_db
 ```
 
 ### 8. Обновление и перезапуск
